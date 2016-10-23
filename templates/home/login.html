@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+
+            <form action="#" method="post">
+                {% csrf_token %}
+                <div class="form-signin jumbotron">
+                    <h2>Sign In</h2>
+                    <hr>
+                    <input type="text" class="form-control" id="user" placeholder="Username">
+                    <input type="password" class="form-control" id="pass" placeholder="Password">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" value="remember">
+                            Remember Me
+                        </label>
+                    </div>
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}

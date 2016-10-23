@@ -1,0 +1,27 @@
+
+
+
+.main-content {
+    margin: 0 auto;
+    padding-top: 40px;
+}
+
+.form-inline > .form-group {
+    margin-right: 20px;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.bulletless > li{
+  list-style-type: none;
+}
+
+.errorlist {
+    list-style-type: none;
+    color: #a94442;
+    padding-left: 0;
+}

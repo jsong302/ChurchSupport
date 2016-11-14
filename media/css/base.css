@@ -1,6 +1,24 @@
+#logo {
+    height:auto;
+
+}
+
+.navbar {
+    height: 80px;
+}
+
+.navbar-brand {
+    padding-left: 0px;
+}
+
 .main-content {
     margin: 0 auto;
-    padding-top: 40px;
+    padding: 40px 0px;
+}
+
+#banner {
+    width:100%;
+    height:auto;
 }
 
 .form-inline > .form-group {
@@ -24,6 +42,27 @@
 }
 
 #map {
-    height:400px;
+    height:500px;
     width: 100%;
+}
+
+#footer {
+    background-color:#f8f7f3;
+    height: 200px;
+    padding: 60px 0px;
+    bottom: 0;
+}
+
+.center {
+    margin:0 auto;
+    display:block;
+    width: 600px;
+}
+
+#footer-logo {
+    width:100%;
+    height:auto;
+}
+
+#footer-content {
 }

@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
-
+{% load static from staticfiles %}
 {% block content %}
-
+    <!-- <div class="row">
+        <div class="col-md-12">
+            <img alt="Banner" id="banner" src="{% static 'img/home_banner.jpg' %}">
+        </div>
+    </div> -->
+    <div class="row">
+        <div class="col-md-12">
+            <h3 style="color:#3d95ef">Need Your Help</h3>
+            <hr>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-8">
-            <form class="form-inline jumbotron search-form">
+            <form class="form-inline search-form" method="POST" id="search" action="/get_zip/">
               <div class="form-group">
                 <label for="zipcode">Your ZipCode</label>
                 <input type="text" class="form-control" id="zipcode" placeholder="07650">
@@ -12,36 +22,176 @@
               <div class="form-group">
                 <label for="distance">Distance</label>
                 <select class="form-control" id="distance">
-                  <option>10 Miles</option>
-                  <option>20 Miles</option>
-                  <option>30 Miles</option>
-                  <option>50 Miles</option>
-                  <option>70 Miles</option>
+                  <option value="10">10 Miles</option>
+                  <option value="20">20 Miles</option>
+                  <option value="30">30 Miles</option>
+                  <option value="50">50 Miles</option>
+                  <option value="70">70 Miles</option>
                 </select>
               </div>
-              <button type="submit" class="btn btn-default">Search</button>
+              <button type="submit" class="btn btn-info">Search</button>
             </form>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
+    <div class="row" style="height:auto;">
+        <div class="col-md-6">
             <div id="map"></div>
             <script>
+              var arr = "{{markers | safe}}";
+              var center = {lat: 40.944543, lng: -74.075419}
+              var zoom = 10;
+              var marker = null;
+              function setMarkers(m) {
+                
+              }
+
+              function changeCenter(lat, lng, z) {
+                    center = {lat: lat, lng: lng};
+                    switch(parseInt(z)) {
+                        case 10:
+                            zoom = 10;
+                            break;
+                        case 20:
+                            zoom = 9;
+                            break;
+                        case 30:
+                            zoom = 8;
+                            break;
+                        case 50:
+                            zoom = 7;
+                            break;
+                        case 70:
+                            zoom = 6;
+                            break;
+                    }
+                    initMap()
+              }
               function initMap() {
-                var uluru = {lat: 40.944543, lng: -74.075419};
                 var map = new google.maps.Map(document.getElementById('map'), {
-                  zoom: 4,
-                  center: uluru
-                });
-                var marker = new google.maps.Marker({
-                  position: uluru,
-                  map: map
+                  zoom: zoom,
+                  center: center
                 });
               }
             </script>
             <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRGShR4pz6wiRVrmmQ-OtWxHAOcZG6W1g&callback=initMap">
             </script>
+        </div>
+        <div class="col-md-6" style="height:500px; overflow:auto">
+            <table class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <th>When</th>
+                    <th colspan="2">Description</th>
+                    <th>Town</th>
+                    <th>Help</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Sun 2:00pm</td>
+                    <td>4</td>
+                    <td>4th Gr to 6th Gr,</td>
+                    <td>07652</td>
+                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                </tr>
+
+            </table>
         </div>
     </div>
 {% endblock %}

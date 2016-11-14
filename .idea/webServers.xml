@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="000b67a2-3aba-4247-b687-d38799fd3a83" name="CSO-AWS" url="http://ec2-52-55-50-111.compute-1.amazonaws.com:8000">
+        <fileTransfer host="ec2-52-55-50-111.compute-1.amazonaws.com" port="22" privateKey="C:\Users\admin\Desktop\Work\ChurchSupport\website\CSO1.pem" rootFolder="/home/ec2-user" accessType="SFTP" username="ec2-user" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

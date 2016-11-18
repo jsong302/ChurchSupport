@@ -72,7 +72,7 @@ function search() {
     $.ajax({
         url : "search/", // the endpoint
         type : "POST", // http method
-        data : { the_post : $('#zipcode').val() }, // data sent with the post request
+        data : { zip : $('#zipcode').val(), miles : $('#distance').val()}, // data sent with the post request
         // handle a successful response
         success : function(json) {
             console.log(json); // log the returned json to the console

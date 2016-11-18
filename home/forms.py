@@ -9,11 +9,7 @@ from django.core import validators
 #         return '<label class="errorlist">%s</label>' % ''.join(['<label class="error">%s</label>' % e for e in self])
 
 class ChurchForm(forms.Form):
-    username = forms.CharField(validators=[validators.MaxLengthValidator(20, "Too many characters (Less than 20)"),
-                                           validators.MinLengthValidator(5, "Not enough characters (More than 5)"),
-                                           validators.RegexValidator("^[a-zA-Z0-9]*$",
-                                                                     "Only alphanumeric characters allowed")
-                                           ])
+    username = forms.EmailField(required=True)
     password = forms.CharField(validators=[validators.MaxLengthValidator(20, "Too many characters (Less than 20)"),
                                            validators.MinLengthValidator(8, "Not enough characters (More than 5)"),
                                            validators.RegexValidator("^[a-zA-Z0-9]*$",
@@ -24,11 +20,10 @@ class ChurchForm(forms.Form):
                                            ])
     lastName = forms.CharField(validators=[validators.RegexValidator("^[a-zA-Z]*$", "Only letters allowed")
                                            ])
-    email = forms.EmailField(validators=[validators.validate_email])
     name = forms.CharField(validators=[validators.MaxLengthValidator(50, "Too many characters (Less than 50)"),
                                        validators.RegexValidator("^[a-zA-Z]*$", "Only letters allowed")
                                        ])
-    phone = forms.CharField(validators=[validators.MaxLengthValidator(9, "Please enter a valid phone number"),
+    phone = forms.CharField(validators=[validators.MaxLengthValidator(10, "Please enter a valid phone number"),
                                          validators.RegexValidator("^[0-9]*$", "Please enter a valid phone number")
                                        ])
     address1 = forms.CharField(required=True)

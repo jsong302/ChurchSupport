@@ -6,45 +6,29 @@ from django.core.urlresolvers import reverse
 from django import forms
 from .forms import ChurchForm
 import MySQLdb
-import json
+import json, math
 
 # Create your views here.
 from django.http import HttpResponse
 
 
 def index(request):
-    json_string = {}
-    db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
-    cursor = db.cursor()
-    sql = "SELECT home_church.zip, home_church.name, zipcode.latitude, zipcode.longitude FROM home_church INNER JOIN zipcode ON home_church.zip=zipcode.zip"
-    try:
-        cursor.execute(sql)
-        results = cursor.fetchall()
-        x = 0
-        response_data = [len(results)]
-        for row in results:
-            response_data[x] = {}
-            response_data[x] = {"zipcode": row[0], "name": row[1], "lat": row[2], "lng": row[3]}
-            print row[0]
-            print row[1]
-            print row[2]
-            print row[3]
-            x = x + 1
-        return render(request, 'home/index.html', Context({"markers": response_data}))
+    return render(request, 'home/index.html', {})
 
-    except:
-        print "Error: unable to fetch data"
-        return render(request, 'home/index.html', {})
+# def calc_miles(x):
+#     lat = math.asin(math.sin(x) * math.cos(d) + cos(lat1) * sin(d) * cos(tc))
+#     dlon = atan2(sin(tc) * sin(d) * cos(lat1), cos(d) - sin(lat1) * sin(lat))
+#     lon = mod(lon1 - dlon + pi, 2 * pi) - pi
 
 
 def search(request):
     if request.method == 'POST':
 
-        post_text = request.POST.get('the_post')
+        zip = request.POST.get('zip')
         response_data = {}
         db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
         cursor = db.cursor()
-        sql = "SELECT * FROM zipcode WHERE zip=" + post_text
+        sql = "SELECT * FROM zipcode WHERE zip=" + zip
 
         try:
             cursor.execute(sql)
@@ -55,6 +39,24 @@ def search(request):
         except:
             print "Error: unable to fetch data"
 
+        sql = "SELECT home_church.zip, home_church.name, zipcode.latitude, zipcode.longitude FROM home_church INNER JOIN zipcode ON home_church.zip=zipcode.zip WHERE home_church zip between"
+        try:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            x = 0
+            response_data = [len(results)]
+            for row in results:
+                response_data[x] = {}
+                response_data[x] = {"zipcode": row[0], "name": row[1], "lat": row[2], "lng": row[3]}
+                print row[0]
+                print row[1]
+                print row[2]
+                print row[3]
+                x = x + 1
+            return render(request, 'home/index.html', Context({"markers": response_data}))
+
+        except:
+            print "Error: unable to fetch data"
         return HttpResponse(
             json.dumps(response_data),
             content_type="application/json"
@@ -70,13 +72,31 @@ def login(request):
 
 def churchForm(request):
     if request.method == 'POST':
+        print "hi1"
         form = ChurchForm(request.POST)
         post = request.POST
-        print form.is_valid()
+        if form.is_valid():
+            print "hi2"
+            return churchMinForm(request)
     else:
         form = None
         post = None
     # ministries = Ministry.objects.order_by('name')
+    context = {
+        # 'ministries': ministries,
+        'post': post,
+        'form': form
+    }
+    return render(request, 'home/churchForm.html', context)
+
+
+def churchMinForm(request):
+    if request.method == 'POST':
+        post = request.POST
+        form = request.POST
+    else:
+        form = None
+        post = None
     context = {
         # 'ministries': ministries,
         'post': post,

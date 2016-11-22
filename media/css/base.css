@@ -66,3 +66,15 @@
 
 #footer-content {
 }
+
+[class^="fa-"], [class*=" fa-"] {
+    display: inline-block;
+    width: 100%;
+}
+th {
+    text-align:center;
+}
+
+td {
+    text-align:center;
+}

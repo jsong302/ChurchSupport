@@ -12,7 +12,7 @@
             <hr>
         </div>
     </div>
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-md-8">
             <form class="form-inline search-form" method="POST" id="search" action="/get_zip/">
               <div class="form-group">
@@ -32,7 +32,7 @@
               <button type="submit" class="btn btn-info">Search</button>
             </form>
         </div>
-    </div>
+    </div> -->
     <div class="row" style="height:auto;">
         <div class="col-md-6">
             <div id="map"></div>
@@ -40,9 +40,6 @@
               var arr = "{{markers | safe}}";
               var center = {lat: 40.944543, lng: -74.075419}
               var zoom = 10;
-              function setMarkers(m) {
-
-              }
 
               function changeCenter(lat, lng, z) {
                     center = {lat: lat, lng: lng};
@@ -70,125 +67,60 @@
                   zoom: zoom,
                   center: center
                 });
+                {% for h in help %}
+                    var myLatlng = new google.maps.LatLng({{h.church.x_lat}},{{h.church.y_long}});
+                    var marker = new google.maps.Marker({
+                        position: myLatlng,
+                        title: "{{h.num}}" + ": " + "{{h.church.name}}"
+                    });
+                    marker.setMap(map);
+                {% endfor %}
               }
             </script>
             <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRGShR4pz6wiRVrmmQ-OtWxHAOcZG6W1g&callback=initMap">
             </script>
         </div>
-        <div class="col-md-6" style="height:500px; overflow:auto">
-            <table class="table table-bordered">
+        <div class="col-md-6" style="height:500px; overflow:auto;">
+            <table class="table table-bordered" id="table" style="font-size: 14px">
                 <tr>
                     <th>ID</th>
                     <th>When</th>
-                    <th colspan="2">Description</th>
+                    <th>#</th>
+                    <th>Description</th>
                     <th>Town</th>
                     <th>Help</th>
                 </tr>
+                {% for h in help %}
                 <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                    <td>{{ h.num }}</td>
+                    {% if h.day == 0 %}
+                        <td>Sun {{h.start}}</td>
+                    {% endif %}
+                    {% if h.day == 1 %}
+                        <td>Mon {{h.start}}</td>
+                    {% endif %}
+                    {% if h.day == 2 %}
+                        <td>Tues {{h.start}}</td>
+                    {% endif %}
+                    {% if h.day == 3 %}
+                        <td>Wed {{h.start}}</td>
+                    {% endif %}
+                    {% if h.day == 4 %}
+                        <td>Thurs {{h.start}}</td>
+                    {% endif %}
+                    {% if h.day == 5 %}
+                        <td>Fri {{h.start}}</td>
+                    {% endif %}
+                    {% if h.day == 6 %}
+                        <td>Sat {{h.start}}</td>
+                    {% endif %}
+                    <td>{{h.students}}</td>
+                    <td>{{h.category.name}}</td>
+                    <td>{{h.church.city}}</td>
+                    <td><i class="fa fa-check-circle-o"></i></td>
                 </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Sun 2:00pm</td>
-                    <td>4</td>
-                    <td>4th Gr to 6th Gr,</td>
-                    <td>07652</td>
-                    <td><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                </tr>
+                {% endfor %}
 
             </table>
         </div>

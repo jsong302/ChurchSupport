@@ -3,13 +3,13 @@
 {% block content %}
     <div class="row">
 				<div class="col-md-6 col-md-offset-3">
-					<h2>Register Your Church</h2>
+					<h2>Register As A Volunteer</h2>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
 					<div class="jumbotron">
-                        <form action="{% url 'home:churchForm' %}" method="post">
+                        <form action="{% url 'home:volunteerForm' %}" method="POST">
                         {% csrf_token %}
                             {% if form.non_field_errors %}
                                 <div class="row">
@@ -41,7 +41,7 @@
                                     {% if form %} {{form.password.errors }} {% endif %}
                                 </div>
                                 <div class="form-group col-md-6 {%  if form.confirm.errors %}has-error has-feedback{% endif %}">
-                                    <label class="sr-only" for="confirmPassword">Confirm Password</label>
+                                    <label class="sr-only" for="confirm">Confirm Password</label>
                                     <input type="password" class="form-control" name="confirm" id="confirm" placeholder="Confirm Password" {% if post %} value = "{{ post.confirm }}"{% endif %}>
                                     {% if form %} {{form.confirm.errors }} {% endif %}
                                 </div>
@@ -59,16 +59,23 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="form-group col-md-12 {%  if form.phone.errors %}has-error has-feedback{% endif %}">
+                                    <label class="sr-only" for="phone">Phone</label>
+                                    <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone" {% if post %} value = "{{ post.phone }}"{% endif %}>
+                                    {% if form %} {{form.phone.errors }} {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-12">
-                                    <h4>Church Contact Information</h4>
+                                    <h4>Church You Attend</h4>
                                 </div>
                             </div>
                             <br>
                             <div class="row">
                                 <div class="form-group col-md-12 {%  if form.name.errors %}has-error has-feedback{% endif %}">
-                                    <label class="sr-only" for="name">Church Name</label>
-                                    <input type="text" class="form-control" name="name" id="name" placeholder="Church Name" {% if post %} value = "{{ post.name }}"{% endif %}>
-                                    {% if form %} {{form.name.errors }} {% endif %}
+                                    <label class="sr-only" for="churchName">Church Name</label>
+                                    <input type="text" class="form-control" name="churchName" id="churchName" placeholder="Church Name" {% if post %} value = "{{ post.name }}"{% endif %}>
+                                    {% if form %} {{form.churchName.errors }} {% endif %}
                                 </div>
                             </div>
                             <div class="row">
@@ -155,12 +162,22 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-md-12 {%  if form.phone.errors %}has-error has-feedback{% endif %}">
-                                    <label class="sr-only" for="phone">Church Contact Number</label>
-                                    <input type="text" class="form-control" name="phone" id="phone" placeholder="Church Contact Number" {% if post %} value = "{{ post.phone }}"{% endif %}>
-                                    {% if form %} {{form.phone.errors }} {% endif %}
+                                <div class="form-group col-md-12 {%  if form.contactName.errors %}has-error has-feedback{% endif %}">
+                                    <label class="sr-only" for="contactName">Church Contact Name</label>
+                                    <input type="text" class="form-control" name="contactName" id="contactName" placeholder="Church Contact Name" {% if post %} value = "{{ post.contactName }}"{% endif %}>
+                                    {% if form %} {{form.contactName.errors }} {% endif %}
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="form-group col-md-12 {%  if form.contactPhone.errors %}has-error has-feedback{% endif %}">
+                                    <label class="sr-only" for="contactPhone">Church Contact Number</label>
+                                    <input type="text" class="form-control" name="contactPhone" id="contactPhone" placeholder="Church Contact Phone" {% if post %} value = "{{ post.contactPhone }}"{% endif %}>
+                                    {% if form %} {{form.contactPhone.errors }} {% endif %}
+                                </div>
+                            </div>
+
+                            <br>
+
 
                           <button style="float:right" type="submit" class="btn btn-default">Next</button>
                         </form>

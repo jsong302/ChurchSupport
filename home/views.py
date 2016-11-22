@@ -186,8 +186,8 @@ def volunteerForm(request):
                                     zipcode=request.POST['zipcode'], church_name=request.POST['churchName'],
                                     church_contact=request.POST['contactName'], church_phone=request.POST['contactPhone'])
                 new_vol.save()
-                return HttpResponseRedirect(reverse('home:index'))
-                # return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[new_vol.id]))
+                # return HttpResponseRedirect(reverse('home:index'))
+                return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[new_vol.id]))
                 # return redirect('churchMinForm', church_id = new_church.id)
     else:
         form = None

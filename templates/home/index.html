@@ -37,11 +37,11 @@
         <div class="col-md-6">
             <div id="map"></div>
             <script>
-              var arr = "{{markers | safe}}";
-              var center = {lat: 40.944543, lng: -74.075419}
-              var zoom = 10;
-
-              function changeCenter(lat, lng, z) {
+                var arr = "{{markers | safe}}";
+                var center = {lat: 40.944543, lng: -74.075419}
+                var zoom = 10;
+                var lookup = [];
+                function changeCenter(lat, lng, z) {
                     center = {lat: lat, lng: lng};
                     switch(parseInt(z)) {
                         case 10:
@@ -61,21 +61,40 @@
                             break;
                     }
                     initMap()
-              }
-              function initMap() {
-                var map = new google.maps.Map(document.getElementById('map'), {
-                  zoom: zoom,
-                  center: center
-                });
-                {% for h in help %}
-                    var myLatlng = new google.maps.LatLng({{h.church.x_lat}},{{h.church.y_long}});
-                    var marker = new google.maps.Marker({
-                        position: myLatlng,
-                        title: "{{h.num}}" + ": " + "{{h.church.name}}"
+                }
+                function initMap() {
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                      zoom: zoom,
+                      center: center
                     });
-                    marker.setMap(map);
-                {% endfor %}
-              }
+
+                    {% for h in help %}
+                        if(isLocationFree([{{h.church.x_lat}},{{h.church.y_long}}])) {
+                            var pinColor = "FE7569";
+                            var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+                                            new google.maps.Size(21, 34),
+                                            new google.maps.Point(0,0),
+                                            new google.maps.Point(10, 34));
+                            var myLatlng = new google.maps.LatLng({{h.church.x_lat}},{{h.church.y_long}});
+                            var marker = new google.maps.Marker({
+                                position: myLatlng,
+                                //icon: pinImage,
+                                title: "{{h.num}}" + ": " + "{{h.church.name}}",
+                                label: "{{h.num}}",
+                            });
+                            marker.setMap(map);
+                            lookup.push([{{h.church.x_lat}},{{h.church.y_long}}]);
+                        }
+                    {% endfor %}
+                }
+                function isLocationFree(search) {
+                    for (var i = 0, l = lookup.length; i < l; i++) {
+                    if (lookup[i][0] === search[0] && lookup[i][1] === search[1]) {
+                      return false;
+                    }
+                }
+                return true;
+            }
             </script>
             <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRGShR4pz6wiRVrmmQ-OtWxHAOcZG6W1g&callback=initMap">
@@ -118,7 +137,7 @@
                     <td>{{h.students}}</td>
                     <td>{{h.category.name}}</td>
                     <td>{{h.church.city}}</td>
-                    <td><i class="fa fa-check-circle-o"></i></td>
+                    <td><a href="{% url 'home:volunteerForm' h.id %}" style="color:black; text-decoration:none"><i class="fa fa-check-circle-o"></i></a></td>
                 </tr>
                 {% endfor %}
 

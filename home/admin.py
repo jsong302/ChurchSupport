@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Church, Volunteer, Min_Category, Min_Group, Help
+from .models import Church, Volunteer, Min_Category, Min_Group, Help, Help_Request
 # Register your models here.
 
 # class VolunteerInline(admin.StackedInline):
@@ -19,8 +19,13 @@ from .models import Church, Volunteer, Min_Category, Min_Group, Help
 #
 # admin.site.unregister(User)
 # admin.site.register(User, UserAdmin)
-admin.site.register(Church)
+
+class ChurchAdmin(admin.ModelAdmin):
+    list_display = ('name', 'number', 'approval')
+
+admin.site.register(Church, ChurchAdmin)
 admin.site.register(Volunteer)
 admin.site.register(Min_Group)
 admin.site.register(Min_Category)
 admin.site.register(Help)
+admin.site.register(Help_Request)

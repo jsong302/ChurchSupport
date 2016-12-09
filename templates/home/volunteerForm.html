@@ -9,7 +9,12 @@
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
 					<div class="jumbotron">
+                        {% if help %}
+                        <form action="{% url 'home:volunteerForm' id %}" method="POST">
+                        {% else %}
                         <form action="{% url 'home:volunteerForm' %}" method="POST">
+                        {% endif %}
+
                         {% csrf_token %}
                             {% if form.non_field_errors %}
                                 <div class="row">
@@ -175,7 +180,7 @@
                                     {% if form %} {{form.contactPhone.errors }} {% endif %}
                                 </div>
                             </div>
-
+                            <input type="hidden" name="help" {% if help %} value = "{{ id }}"{% endif %}>
                             <br>
 
 

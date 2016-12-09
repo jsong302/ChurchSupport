@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django import forms
-from home.models import Min_Category, Church, Help, Volunteer
+from home.models import Min_Category, Church, Help, Volunteer, Help_Request
 from .forms import ChurchForm, ChurchMinForm, VolunteerForm, VolunteerMinForm
 import MySQLdb
 import json, math
@@ -169,7 +169,11 @@ def churchMinForm(request, id):
 #     print form.is_valid()
 #     return churchForm(request)
 
-def volunteerForm(request):
+def volunteerForm(request, id = None):
+    if id:
+        help = True
+    else:
+        help = False
     if request.method == 'POST':
         form = VolunteerForm(request.POST)
         post = request.POST
@@ -187,18 +191,32 @@ def volunteerForm(request):
                                     church_contact=request.POST['contactName'], church_phone=request.POST['contactPhone'])
                 new_vol.save()
                 # return HttpResponseRedirect(reverse('home:index'))
-                return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[new_vol.id]))
+                if id:
+                    return HttpResponseRedirect(reverse('home:helpConfirm', args=[id, new_vol.id]))
+                else:
+                    return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[new_vol.id]))
                 # return redirect('churchMinForm', church_id = new_church.id)
     else:
         form = None
         post = None
-    context = {
-        'post': post,
-        'form': form
-    }
+
+    if id:
+        context = {
+            'post': post,
+            'form': form,
+            'id': id,
+            'help': help
+        }
+    else:
+        context = {
+            'post': post,
+            'form': form,
+            'help': help
+        }
     return render(request, 'home/volunteerForm.html', context)
 
 def volunteerMinForm(request, id):
+
     if request.method == 'POST':
         form = VolunteerMinForm(request.POST)
         post = request.POST
@@ -208,28 +226,41 @@ def volunteerMinForm(request, id):
         post = None
     context = {
         'post': post,
-        'form': form
+        'form': form,
+        'id': id
     }
     return render(request, 'home/volunteerMinForm.html', context)
 
 
-    # try:
-    #     username = request.POST['username']
-    # except (KeyError):
-    #     # Redisplay the question voting form.
-    #     return render(request, 'form/church.html', {
-    #         'input': 'username',
-    #         'error_message': "Username is empty",
-    #     })
-    # else:
-    #     try:
-    #
-    #     selected_choice.votes += 1
-    #     selected_choice.save()
-    #     # Always return an HttpResponseRedirect after successfully dealing
-    #     # with POST data. This prevents data from being posted twice if a
-    #     # user hits the Back button.
-    #     return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+def helpConfirm(request, id, vol):
+    help = Help.objects.get(id=id)
+    if request.method == 'POST':
+        post = request.POST
+        print post
+    else:
+        post = None
+
+    context = {
+        'post': post,
+        'help': help,
+        'vol': vol
+    }
+    return render(request, 'home/helpConfirm.html', context)
+
+def submitRequest(request):
+    if request.method == 'POST':
+        post = request.POST
+        with transaction.atomic():
+            help = Help.objects.get(id=request.POST["help_id"])
+            vol = Volunteer.objects.get(id=request.POST["volunteer_id"])
+            request = Help_Request(help=help, volunteer=vol)
+
+            request.save()
+            # return HttpResponseRedirect(reverse('home:index'))
+            return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[vol.id]))
+                # return redirect('churchMinForm', church_id = new_church.id)
+    else:
+        return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[request.POST["volunteer_id"]]))
 
 
 

@@ -2,8 +2,14 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+import MySQLdb
 
 # Create your models here.
+
+APPROVAL_CHOICES = (
+    (0, 'Unapproved'),
+    (1, 'Approved')
+)
 
 class Church(models.Model):
     def __unicode__(self):
@@ -16,11 +22,27 @@ class Church(models.Model):
     city = models.CharField(max_length=50, null=True)
     state = models.CharField(max_length=50, null=True)
     zipcode = models.CharField(max_length=6, null=True)
-    x_lat = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    y_long = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    x_lat = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, editable=False)
+    y_long = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, editable=False)
     church_area1 = models.CharField(max_length=50, null=True, blank=True)
     church_area2 = models.CharField(max_length=50, null=True, blank=True)
-    approval = models.PositiveSmallIntegerField(default=0)
+    approval = models.PositiveSmallIntegerField(default=0, choices=APPROVAL_CHOICES)
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super(Church, self).save(*args, **kwargs)
+        db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
+        cursor = db.cursor()
+        sql = "SELECT * FROM zipcode WHERE zip=" + self.zipcode
+        try:
+            cursor.execute(sql)
+            results = cursor.fetchone()
+            self.x_lat = results[4]
+            self.y_long = results[5]
+        except:
+            print "Error: unable to fetch data"
+        super(Church, self).save(*args, **kwargs)
 
 class Volunteer(models.Model):
     def __unicode__(self):
@@ -35,8 +57,12 @@ class Volunteer(models.Model):
     church_name = models.CharField(max_length=50, null=True)
     church_contact = models.CharField(max_length=50, null=True)
     church_phone = models.CharField(max_length=20, null=True)
-    approval = models.PositiveSmallIntegerField(default=0)
+    approval = models.PositiveSmallIntegerField(default=0, choices=APPROVAL_CHOICES)
     level = models.PositiveSmallIntegerField(null=True, default=5)
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True)
+
+
 
 class Min_Group(models.Model):
     def __unicode__(self):
@@ -62,4 +88,10 @@ class Help(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     last_modified = models.DateTimeField(auto_now=True, null=True)
 
-
+class Help_Request(models.Model):
+    def __unicode__(self):
+        return self.help.church.name + ": " + self.help.category.group.name + " " + self.help.category.name
+    volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
+    help = models.ForeignKey(Help, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True, null=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True)

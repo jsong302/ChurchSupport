@@ -28,7 +28,7 @@
                             </div>
                             <br>
                             <fieldset id="build">
-
+                                <input type="hidden" name="count" id="count">
                             </fieldset>
                             <p><a href="#" id="add">Add another category +</a></p>
                           <button style="float:right" type="submit" class="btn btn-default">Submit</button>
@@ -37,24 +37,27 @@
 				</div>
 			</div>
             <script>
-                console.log("{{post}}");
-                $(function() {
-                    $( "#add" ).click(function() {
-                        var row= $("<div class=\"row\"></div>");
-                        var group =   $("<div class=\"form-group col-md-10\">");
-                        var select = $("<select class=\"form-control\" id=\"category\" name=\"category\"></select>");
-                        var option =   $("<option value=\"AK\">Alaska</option>");
-                        var removeButton = $("<div class=\"col-md-2\"><button class=\"btn btn-danger\">Remove</button></div>");
-                        removeButton.click(function() {
-                            $(this).parent().remove();
-                        });
-                        select.append(option);
-                        group.append(select);
-                        row.append(group);
-                        row.append(removeButton);
-                      $("#build").append(row);
-
+                var x = 0;
+                $( "#add" ).click(function() {
+                    var d = $("<div></div>");
+                    var row= $("<div class=\"row\"></div>");
+                    var group =   $("<div class=\"form-group col-md-10\">");
+                    var select = $("<select class=\"form-control\" id=\"category\" name=\"category[" + x + "]\"></select>");
+                    var removeButton = $("<div class=\"col-md-2\"><button class=\"btn btn-danger\">Remove</button></div>");
+                    removeButton.click(function() {
+                        $(this).parent().parent().remove();
                     });
+                    {% for min in ministries %}
+                        console.log("{{ min.id }}");
+                        select.append($("<option value=\"{{min.id}}\">{{min}}</option>"));
+                    {% endfor %}
+                    $("#count").val(x++);
+                    group.append(select);
+                    row.append(group);
+                    row.append(removeButton);
+                    d.append(row);
+                    $("#build").append(d);
+
                 });
             </script>
 {% endblock %}

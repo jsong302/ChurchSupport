@@ -62,8 +62,6 @@ class Volunteer(models.Model):
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     last_modified = models.DateTimeField(auto_now=True, null=True)
 
-
-
 class Min_Group(models.Model):
     def __unicode__(self):
         return 'Group: ' + self.name
@@ -74,6 +72,12 @@ class Min_Category(models.Model):
         return 'Category: ' + self.name
     group = models.ForeignKey(Min_Group, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, null=True)
+
+class Interest(models.Model):
+    def __unicode__(self):
+        return 'Volunteer: ' + self.volunteer.name + ' Category: ' + self.category.name
+    volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
+    category = models.ForeignKey(Min_Category, on_delete=models.CASCADE)
 
 class Help(models.Model):
     def __unicode__(self):

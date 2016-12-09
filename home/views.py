@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django import forms
-from home.models import Min_Category, Church, Help, Volunteer, Help_Request
+from home.models import Min_Category, Church, Help, Volunteer, Help_Request, Interest
 from .forms import ChurchForm, ChurchMinForm, VolunteerForm, VolunteerMinForm
 import MySQLdb
 import json, math
@@ -216,15 +216,26 @@ def volunteerForm(request, id = None):
     return render(request, 'home/volunteerForm.html', context)
 
 def volunteerMinForm(request, id):
-
+    ministries = Min_Category.objects.order_by('name')
     if request.method == 'POST':
         form = VolunteerMinForm(request.POST)
         post = request.POST
-        print post
+        count = request.POST['count']
+        print count
+        for x in range(0, int(count) + 1):
+            with transaction.atomic():
+                try:
+                    category = Min_Category.objects.get(id=request.POST["category[" + str(x) + "]"])
+                    volunteer = Volunteer.objects.get(id=id)
+                    interest = Interest(category=category, volunteer=volunteer)
+                    interest.save()
+                except KeyError:
+                    print "KeyError in index: " + str(x)
     else:
         form = None
         post = None
     context = {
+        'ministries': ministries,
         'post': post,
         'form': form,
         'id': id

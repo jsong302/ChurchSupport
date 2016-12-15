@@ -3,9 +3,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.template import loader, Context
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
-from django.db import transaction
-from django import forms
-from home.models import Min_Category, Church, Help, Volunteer, Help_Request, Interest
+from django.db import transaction, IntegrityError
+from home.models import Min_Category, Church, Help, Volunteer, Help_Request, Interest, Zipcode
 from .forms import ChurchForm, ChurchMinForm, VolunteerForm, VolunteerMinForm
 import MySQLdb
 import json, math
@@ -15,15 +14,20 @@ from django.http import HttpResponse
 
 
 def index(request):
-    help = Help.objects.exclude(church__approval = 0)
+    help = Help.objects.exclude(church__approval = 0).extra(order_by = ['church__city'])
     response_data = {}
-    db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
-    cursor = db.cursor()
 
     x = 1
+    lookup = dict()
+
     for h in help:
-        h.num = x
-        x = x + 1
+        key = h.church.zipcode
+        if key in lookup:
+            h.num = lookup[key]
+        else:
+            h.num = x
+            lookup[key] = x
+            x = x + 1
 
     context = {
         'help': help
@@ -99,16 +103,9 @@ def churchForm(request):
                 new_church = Church(user=user, name=request.POST['name'], number=request.POST['phone'],
                                     address1=request.POST['address1'], address2=request.POST['address2'],
                                     city=request.POST['city'], state=request.POST['state'], zipcode=request.POST['zipcode'])
-                db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
-                cursor = db.cursor()
-                sql = "SELECT * FROM zipcode WHERE zip=" + request.POST['zipcode']
-                try:
-                    cursor.execute(sql)
-                    results = cursor.fetchone()
-                    new_church.x_lat = results[4]
-                    new_church.y_long = results[5]
-                except:
-                    print "Error: unable to fetch data"
+                zipcode = Zipcode.objects.get(zip=request.POST["zipcode"])
+                new_church.x_lat = zipcode.latitude
+                new_church.y_long = zipcode.longitude
                 new_church.save()
                 return HttpResponseRedirect(reverse('home:churchMinForm', args=[new_church.id]))
                 # return redirect('churchMinForm', church_id = new_church.id)
@@ -178,24 +175,28 @@ def volunteerForm(request, id = None):
         form = VolunteerForm(request.POST)
         post = request.POST
         if form.is_valid():
-            print post
-            with transaction.atomic():
-                user = User.objects.create_user(username=request.POST['username'], email=request.POST['username'],
-                                                password=request.POST['password'], first_name=request.POST['firstName'],
-                                                last_name=request.POST['lastName'])
-                user.save()
-                new_vol = Volunteer(user=user, phone=request.POST['phone'],
-                                    address1=request.POST['address1'], address2=request.POST['address2'],
-                                    city=request.POST['city'], state=request.POST['state'],
-                                    zipcode=request.POST['zipcode'], church_name=request.POST['churchName'],
-                                    church_contact=request.POST['contactName'], church_phone=request.POST['contactPhone'])
-                new_vol.save()
-                # return HttpResponseRedirect(reverse('home:index'))
-                if id:
-                    return HttpResponseRedirect(reverse('home:helpConfirm', args=[id, new_vol.id]))
-                else:
-                    return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[new_vol.id]))
-                # return redirect('churchMinForm', church_id = new_church.id)
+            try:
+                with transaction.atomic():
+                    user = User.objects.create_user(username=request.POST['username'], email=request.POST['username'],
+                                                    password=request.POST['password'],
+                                                    first_name=request.POST['firstName'],
+                                                    last_name=request.POST['lastName'])
+                    user.save()
+                    new_vol = Volunteer(user=user, phone=request.POST['phone'],
+                                        address1=request.POST['address1'], address2=request.POST['address2'],
+                                        city=request.POST['city'], state=request.POST['state'],
+                                        zipcode=request.POST['zipcode'], church_name=request.POST['churchName'],
+                                        church_contact=request.POST['contactName'],
+                                        church_phone=request.POST['contactPhone'])
+                    new_vol.save()
+                    if id:
+                        return HttpResponseRedirect(reverse('home:helpConfirm', args=[id, new_vol.id]))
+                    else:
+                        return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[new_vol.id]))
+            except IntegrityError as e:
+                form.add_error(None, "This email is already taken.")
+
+
     else:
         form = None
         post = None

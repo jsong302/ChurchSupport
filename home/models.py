@@ -11,9 +11,32 @@ APPROVAL_CHOICES = (
     (1, 'Approved')
 )
 
+class Zipcode(models.Model):
+    def __unicode__(self):
+        return self.zip
+    zip = models.CharField(primary_key=True, max_length=5)
+    county = models.TextField(blank=True, null=True)
+    timezone = models.TextField(blank=True, null=True)
+    area_code = models.TextField(blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'zipcode'
+
+class Location_Area(models.Model):
+    def __unicode__(self):
+        return 'Location: ' + self.name
+
+    zipcode = models.ForeignKey(Zipcode, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, null=True)
+    korean = models.CharField(max_length=50, null=True, blank=True)
+    icon = models.CharField(max_length=50, null=True, blank=True)
+
 class Church(models.Model):
     def __unicode__(self):
-        return 'Church: ' + self.name
+        return self.name[:1] + " Church"
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, null=True)
     number = models.CharField(max_length=20, null=True)
@@ -26,22 +49,16 @@ class Church(models.Model):
     y_long = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, editable=False)
     church_area1 = models.CharField(max_length=50, null=True, blank=True)
     church_area2 = models.CharField(max_length=50, null=True, blank=True)
+    other_language = models.CharField(max_length=50, null=True, blank=True)
     approval = models.PositiveSmallIntegerField(default=0, choices=APPROVAL_CHOICES)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     last_modified = models.DateTimeField(auto_now=True, null=True)
 
     def save(self, *args, **kwargs):
         super(Church, self).save(*args, **kwargs)
-        db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
-        cursor = db.cursor()
-        sql = "SELECT * FROM zipcode WHERE zip=" + self.zipcode
-        try:
-            cursor.execute(sql)
-            results = cursor.fetchone()
-            self.x_lat = results[4]
-            self.y_long = results[5]
-        except:
-            print "Error: unable to fetch data"
+        zipcode = Zipcode.objects.get(zip=self.zipcode)
+        self.x_lat = zipcode.latitude
+        self.y_long = zipcode.longitude
         super(Church, self).save(*args, **kwargs)
 
 class Volunteer(models.Model):
@@ -66,16 +83,19 @@ class Min_Group(models.Model):
     def __unicode__(self):
         return 'Group: ' + self.name
     name = models.CharField(max_length=50, null=True)
+    icon = models.CharField(max_length=50, null=True, blank=True)
 
 class Min_Category(models.Model):
     def __unicode__(self):
         return 'Category: ' + self.name
     group = models.ForeignKey(Min_Group, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, null=True)
+    korean = models.CharField(max_length=50, null=True, blank=True)
+    icon = models.CharField(max_length=50, null=True, blank=True)
 
 class Interest(models.Model):
     def __unicode__(self):
-        return 'Volunteer: ' + self.volunteer.name + ' Category: ' + self.category.name
+        return 'Volunteer: ' + self.volunteer.user.first_name + ' Category: ' + self.category.name
     volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
     category = models.ForeignKey(Min_Category, on_delete=models.CASCADE)
 
@@ -84,7 +104,7 @@ class Help(models.Model):
         return 'Church: ' + self.church.name + ' Category: ' + self.category.name
     category = models.ForeignKey(Min_Category, on_delete=models.CASCADE)
     church = models.ForeignKey(Church, on_delete=models.CASCADE)
-    volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE, blank=True, null=True)
+    volunteer = models.ForeignKey(Volunteer, blank=True, null=True)
     start = models.TimeField(null=True)
     end = models.TimeField(null=True)
     students = models.PositiveIntegerField(null=True)
@@ -99,3 +119,4 @@ class Help_Request(models.Model):
     help = models.ForeignKey(Help, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True, null=True)
     last_modified = models.DateTimeField(auto_now=True, null=True)
+

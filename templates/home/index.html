@@ -69,7 +69,8 @@
                     });
 
                     {% for h in help %}
-                        if(isLocationFree([{{h.church.x_lat}},{{h.church.y_long}}])) {
+                        var res = isLocationTaken([{{h.church.x_lat}},{{h.church.y_long}}]);
+                        if(res == -1) {
                             var pinColor = "FE7569";
                             var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
                                             new google.maps.Size(21, 34),
@@ -83,18 +84,20 @@
                                 label: "{{h.num}}",
                             });
                             marker.setMap(map);
-                            lookup.push([{{h.church.x_lat}},{{h.church.y_long}}]);
+                            lookup.push([{{h.church.x_lat}},{{h.church.y_long}}, marker]);
+                        } else {
+                            res.setTitle(res.getTitle() + ", " + "{{h.church.name}}")
                         }
                     {% endfor %}
                 }
-                function isLocationFree(search) {
-                    for (var i = 0, l = lookup.length; i < l; i++) {
-                    if (lookup[i][0] === search[0] && lookup[i][1] === search[1]) {
-                      return false;
+                function isLocationTaken(search) {
+                        for (var i = 0, l = lookup.length; i < l; i++) {
+                        if (lookup[i][0] === search[0] && lookup[i][1] === search[1]) {
+                          return lookup[i][2];
+                        }
                     }
+                    return -1;
                 }
-                return true;
-            }
             </script>
             <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRGShR4pz6wiRVrmmQ-OtWxHAOcZG6W1g&callback=initMap">

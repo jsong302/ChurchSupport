@@ -79,7 +79,7 @@
                             <div class="row">
                                 <div class="form-group col-md-12 {%  if form.name.errors %}has-error has-feedback{% endif %}">
                                     <label class="sr-only" for="churchName">Church Name</label>
-                                    <input type="text" class="form-control" name="churchName" id="churchName" placeholder="Church Name" {% if post %} value = "{{ post.name }}"{% endif %}>
+                                    <input type="text" class="form-control" name="churchName" id="churchName" placeholder="Church Name" {% if post %} value = "{{ post.churchName }}"{% endif %}>
                                     {% if form %} {{form.churchName.errors }} {% endif %}
                                 </div>
                             </div>

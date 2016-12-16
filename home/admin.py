@@ -24,8 +24,7 @@ def getRequests(obj):
     help = Help.objects.filter(church=obj).extra(order_by=['category__name'])
     res = ""
     for h in help:
-        res += h.category.name
-        res += "\n"
+        res = res + " \n" + h.category.group.name + ": " + h.category.name
     return ("%s" % (res))
 getRequests.short_description = 'Requests'
 

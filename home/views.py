@@ -1,17 +1,21 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template import loader, Context
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db import transaction, IntegrityError
+from django.contrib.auth import authenticate, login, logout
 from home.models import Min_Category, Church, Help, Volunteer, Help_Request, Interest, Zipcode
-from .forms import ChurchForm, ChurchMinForm, VolunteerForm, VolunteerMinForm
+from .forms import ChurchForm, ChurchMinForm, VolunteerForm, VolunteerMinForm, LoginForm
 import MySQLdb
 import json, math
 
 # Create your views here.
 from django.http import HttpResponse
 
+def not_in_church_group(user):
+    return user.is_authenticated() and not user.groups.filter(name='Church').exists()
 
 def index(request):
     help = Help.objects.exclude(church__approval = 0).extra(order_by = ['church__city'])
@@ -86,8 +90,35 @@ def search(request):
             content_type="application/json"
         )
 
-def login(request):
-    return render(request, 'home/login.html', {})
+def userLogin(request):
+    if request.method == 'POST':
+        post = request.POST
+        form = LoginForm(request.POST)
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(reverse('home:index'))
+            else:
+                form.add_error(None, "This account has been disabled")
+        else:
+            form.add_error(None, "Invalid User")
+    else:
+        post = None
+        form = None
+    context = {
+        'post': post,
+        'form': form
+    }
+    return render(request, 'home/login.html', context)
+
+def userLogout(request):
+
+    logout(request)
+
+    return HttpResponseRedirect(reverse('home:index'))
 
 def churchForm(request):
     if request.method == 'POST':
@@ -107,26 +138,26 @@ def churchForm(request):
                 new_church.x_lat = zipcode.latitude
                 new_church.y_long = zipcode.longitude
                 new_church.save()
-                return HttpResponseRedirect(reverse('home:churchMinForm', args=[new_church.id]))
-                # return redirect('churchMinForm', church_id = new_church.id)
+                group = Group.objects.get(name='Church')
+                group.user_set.add(user)
+                login(request, user)
+                return HttpResponseRedirect(reverse('home:churchMinForm'))
 
 
 
     else:
         form = None
         post = None
-    # ministries = Ministry.objects.order_by('name')
     context = {
-        # 'ministries': ministries,
         'post': post,
         'form': form
     }
     return render(request, 'home/churchForm.html', context)
 
-
-def churchMinForm(request, id):
+@login_required
+@user_passes_test(not_in_church_group, login_url='/login')
+def churchMinForm(request):
     ministries = Min_Category.objects.order_by('name')
-    print request.method
     if request.method == 'POST':
         form = ChurchMinForm(request.POST)
         post = request.POST
@@ -151,20 +182,8 @@ def churchMinForm(request, id):
         'ministries': ministries,
         'post': post,
         'form': form,
-        'id': id
     }
     return render(request, 'home/churchMinForm.html', context)
-
-# def registerChurch(request):
-#     if(request.POST['password'] != request.POST['confirm']):
-#         # return render(request, '../templates/home/churchForm.html', {
-#         #     'input': 'password',
-#         #     'error_message': "The password does not match",
-#         # })
-#         return HttpResponse("Not same password")
-#     form = ChurchForm(request.POST)
-#     print form.is_valid()
-#     return churchForm(request)
 
 def volunteerForm(request, id = None):
     if id:

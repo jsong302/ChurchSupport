@@ -83,3 +83,7 @@ class VolunteerForm(forms.Form):
 
 class VolunteerMinForm(forms.Form):
     category = forms.CharField()
+
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField()

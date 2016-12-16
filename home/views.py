@@ -15,7 +15,7 @@ import json, math
 from django.http import HttpResponse
 
 def not_in_church_group(user):
-    return user.is_authenticated() and not user.groups.filter(name='Church').exists()
+    return user.is_authenticated() and user.groups.filter(name='Church').exists()
 
 def index(request):
     help = Help.objects.exclude(church__approval = 0).extra(order_by = ['church__city'])
@@ -140,7 +140,8 @@ def churchForm(request):
                 new_church.save()
                 group = Group.objects.get(name='Church')
                 group.user_set.add(user)
-                login(request, user)
+                u = authenticate(username=request.POST['username'], password=request.POST['password'])
+                login(request, u)
                 return HttpResponseRedirect(reverse('home:churchMinForm'))
 
 
@@ -154,10 +155,13 @@ def churchForm(request):
     }
     return render(request, 'home/churchForm.html', context)
 
-@login_required
-@user_passes_test(not_in_church_group, login_url='/login')
+@login_required(redirect_field_name=None)
+@user_passes_test(not_in_church_group, login_url='/login/', redirect_field_name=None)
 def churchMinForm(request):
     ministries = Min_Category.objects.order_by('name')
+    church = Church.objects.get(user = request.user)
+    requests = Help.objects.all().filter(church=church)
+    print requests
     if request.method == 'POST':
         form = ChurchMinForm(request.POST)
         post = request.POST
@@ -167,7 +171,7 @@ def churchMinForm(request):
             with transaction.atomic():
                 try:
                     category = Min_Category.objects.get(id=request.POST["category[" + str(x) + "]"])
-                    church = Church.objects.get(id=id)
+                    church = Church.objects.get(id=church.id)
                     help = Help(category=category, church=church, start=request.POST["start[" + str(x) + "]"],
                                 end=request.POST["end[" + str(x) + "]"], students=request.POST["students[" + str(x) + "]"],
                                 day=request.POST["day[" + str(x) + "]"])
@@ -182,6 +186,7 @@ def churchMinForm(request):
         'ministries': ministries,
         'post': post,
         'form': form,
+        'requests': requests
     }
     return render(request, 'home/churchMinForm.html', context)
 

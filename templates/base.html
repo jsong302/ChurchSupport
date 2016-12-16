@@ -44,10 +44,10 @@
 
                             <ul class="nav navbar-nav navbar-right">
                             <li><a href="{% url 'home:index' %}">Home</a></li>
-                            <script>
-                                console.log("{{ user }}");
-                            </script>
                             {% if user.is_authenticated %}
+                                {% if user.groups.all.0.name == "Church" %}
+                                    <li><a href="{% url 'home:churchMinForm' %}">Requests</a></li>
+                                {% endif %}
                                 <li><a href="{% url 'home:logout' %}">Logout</a></li>
                             {% else %}
                             <li><a href="{% url 'home:churchForm' %}">Need Your Help</a></li>

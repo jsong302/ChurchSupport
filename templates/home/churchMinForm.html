@@ -2,12 +2,12 @@
 
 {% block content %}
     <div class="row">
-				<div class="col-md-6 col-md-offset-3">
+				<div class="col-md-8 col-md-offset-2">
 					<h2>Select Ministries</h2>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-6 col-md-offset-3">
+				<div class="col-md-8 col-md-offset-2">
 					<div class="jumbotron">
                         <form action="{% url 'home:churchMinForm' %}" method="post">
                         {% csrf_token %}
@@ -27,7 +27,26 @@
                                 </div>
                             </div>
                             <br>
+                            <script>
+                                    console.log({{ requests }});
+                                </script>
+                            {% if requests != None %}
+                                    {% for h in requests %}
+                                        <div style="background:#FFEBCD !important" class="jumbotron">
+                                            <div class="row">
+                                                <p><b>Church Name: </b> {{ h.church.name }}</p>
+                                                <p><b>Church Location: </b> {{ h.church.city }}</p>
+                                                <p><b>Ministry Type: </b> {{ h.category.group.name }} {{ h.category.name }}</p>
+                                                <p><b>Number of Students: </b> {{ h.students }}</p>
+                                                <p><b>Start Time: </b> {{ h.start }}</p>
+                                                <p><b>End Time: </b> {{ h.end }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
                             <fieldset id="build">
+
+
                                 <input type="hidden" name="count" id="count">
                             </fieldset>
                             <p><a href="#" id="add">Add another category +</a></p>
@@ -40,7 +59,7 @@
                 $(function() {
                     var x = 0;
                     $( "#add" ).click(function() {
-                        var d = $("<div></div>");
+                        var d = $("<div style=\"background:#FFEBCD !important\" class=\"jumbotron\"></div>");
                         var row= $("<div class=\"row\"></div>");
                         var group =   $("<div class=\"form-group col-md-10\">");
                         var select = $("<select class=\"form-control\" id=\"category\" name=\"category[" + x + "]\"></select>");

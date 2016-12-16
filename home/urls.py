@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^logout/$', views.userLogout, name='logout'),
     url(r'^churchForm/$', views.churchForm, name='churchForm'),
     url(r'^selectMinistries/$', views.churchMinForm, name='churchMinForm'),
+    url(r'^removeHelp/(?P<id>[0-9]+)/$', views.removeHelp, name='removeHelp'),
     url(r'^selectInterest/(?P<id>[0-9]+)/$', views.volunteerMinForm, name='volunteerMinForm'),
     url(r'^confirm/(?P<id>[0-9]+)/(?P<vol>[0-9]+)/$', views.helpConfirm, name='helpConfirm'),
     url(r'^submitRequest/$', views.submitRequest, name='submitRequest'),

@@ -17,6 +17,7 @@ from django.http import HttpResponse
 def not_in_church_group(user):
     return user.is_authenticated() and user.groups.filter(name='Church').exists()
 
+
 def index(request):
     help = Help.objects.exclude(church__approval = 0).extra(order_by = ['church__city'])
     response_data = {}
@@ -190,6 +191,17 @@ def churchMinForm(request):
     }
     return render(request, 'home/churchMinForm.html', context)
 
+@login_required(redirect_field_name=None)
+@user_passes_test(not_in_church_group, login_url='/login/', redirect_field_name=None)
+def removeHelp(request, id):
+    help = Help.objects.get(id=id)
+    if help.church.user == request.user:
+        help.delete()
+        return HttpResponseRedirect(reverse('home:churchMinForm'))
+    else:
+        return HttpResponseRedirect(reverse('home:login'))
+
+
 def volunteerForm(request, id = None):
     if id:
         help = True
@@ -266,6 +278,7 @@ def volunteerMinForm(request, id):
         'id': id
     }
     return render(request, 'home/volunteerMinForm.html', context)
+
 
 
 def helpConfirm(request, id, vol):

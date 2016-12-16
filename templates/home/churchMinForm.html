@@ -9,8 +9,7 @@
 			<div class="row">
 				<div class="col-md-8 col-md-offset-2">
 					<div class="jumbotron">
-                        <form action="{% url 'home:churchMinForm' %}" method="post">
-                        {% csrf_token %}
+
                             {% if form.non_field_errors %}
                                 <div class="row">
                                     <div class="col-md-12">
@@ -34,20 +33,28 @@
                                     {% for h in requests %}
                                         <div style="background:#FFEBCD !important" class="jumbotron">
                                             <div class="row">
-                                                <p><b>Church Name: </b> {{ h.church.name }}</p>
-                                                <p><b>Church Location: </b> {{ h.church.city }}</p>
-                                                <p><b>Ministry Type: </b> {{ h.category.group.name }} {{ h.category.name }}</p>
-                                                <p><b>Number of Students: </b> {{ h.students }}</p>
-                                                <p><b>Start Time: </b> {{ h.start }}</p>
-                                                <p><b>End Time: </b> {{ h.end }}</p>
+                                                <div class="col-md-12">
+                                                    <p><b>Church Name: </b> {{ h.church.name }}</p>
+                                                    <p><b>Church Location: </b> {{ h.church.city }}</p>
+                                                    <p><b>Ministry Type: </b> {{ h.category.group.name }} {{ h.category.name }}</p>
+                                                    <p><b>Number of Students: </b> {{ h.students }}</p>
+                                                    <p><b>Start Time: </b> {{ h.start }}</p>
+                                                    <p><b>End Time: </b> {{ h.end }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-3"><a href="{% url 'home:removeHelp' h.id %}"><button class="btn btn-danger">Cancel Request</button></a></div>
                                             </div>
                                         </div>
+
                                     {% endfor %}
                                 {% endif %}
+                        <form action="{% url 'home:churchMinForm' %}" method="post">
+                            {% csrf_token %}
                             <fieldset id="build">
 
 
-                                <input type="hidden" name="count" id="count">
+                                <input type="hidden" name="count" id="count" value="0">
                             </fieldset>
                             <p><a href="#" id="add">Add another category +</a></p>
                           <button style="float:right" type="submit" class="btn btn-default">Submit</button>

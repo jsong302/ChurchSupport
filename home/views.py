@@ -14,7 +14,11 @@ import json, math
 # Create your views here.
 from django.http import HttpResponse
 
+
 def not_in_church_group(user):
+    return user.is_authenticated() and user.groups.filter(name='Church').exists()
+
+def not_in_volunteer_group(user):
     return user.is_authenticated() and user.groups.filter(name='Church').exists()
 
 
@@ -27,12 +31,13 @@ def index(request):
 
     for h in help:
         key = h.church.zipcode
+        h.church.name = h.church.name[:1] + " Church"
         if key in lookup:
             h.num = lookup[key]
         else:
             h.num = x
             lookup[key] = x
-            x = x + 1
+            x += 1
 
     context = {
         'help': help
@@ -45,70 +50,72 @@ def index(request):
 #     lon = mod(lon1 - dlon + pi, 2 * pi) - pi
 
 
-def search(request):
-    if request.method == 'POST':
-
-        zip = request.POST.get('zip')
-        response_data = {}
-        db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
-        cursor = db.cursor()
-        sql = "SELECT * FROM zipcode WHERE zip=" + zip
-
-        try:
-            cursor.execute(sql)
-            results = cursor.fetchone()
-            response_data['zipcode'] = results[0]
-            response_data['lat'] = results[4]
-            response_data['long'] = results[5]
-        except:
-            print "Error: unable to fetch data"
-
-        sql = "SELECT home_church.zip, home_church.name, zipcode.latitude, zipcode.longitude FROM home_church INNER JOIN zipcode ON home_church.zip=zipcode.zip WHERE home_church zip between"
-        try:
-            cursor.execute(sql)
-            results = cursor.fetchall()
-            x = 0
-            response_data = [len(results)]
-            for row in results:
-                response_data[x] = {}
-                response_data[x] = {"zipcode": row[0], "name": row[1], "lat": row[2], "lng": row[3]}
-                print row[0]
-                print row[1]
-                print row[2]
-                print row[3]
-                x = x + 1
-            return render(request, 'home/index.html', Context({"markers": response_data}))
-
-        except:
-            print "Error: unable to fetch data"
-        return HttpResponse(
-            json.dumps(response_data),
-            content_type="application/json"
-        )
-    else:
-        return HttpResponse(
-            json.dumps({"nothing to see": "this isn't happening"}),
-            content_type="application/json"
-        )
+# def search(request):
+#     if request.method == 'POST':
+#
+#         zip = request.POST.get('zip')
+#         response_data = {}
+#         db = MySQLdb.connect("cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com", "admin", "noz8VER8!!!", "CSO")
+#         cursor = db.cursor()
+#         sql = "SELECT * FROM zipcode WHERE zip=" + zip
+#
+#         try:
+#             cursor.execute(sql)
+#             results = cursor.fetchone()
+#             response_data['zipcode'] = results[0]
+#             response_data['lat'] = results[4]
+#             response_data['long'] = results[5]
+#         except:
+#             print "Error: unable to fetch data"
+#
+#         sql = "SELECT home_church.zip, home_church.name, zipcode.latitude, zipcode.longitude FROM home_church INNER JOIN zipcode ON home_church.zip=zipcode.zip WHERE home_church zip between"
+#         try:
+#             cursor.execute(sql)
+#             results = cursor.fetchall()
+#             x = 0
+#             response_data = [len(results)]
+#             for row in results:
+#                 response_data[x] = {}
+#                 response_data[x] = {"zipcode": row[0], "name": row[1], "lat": row[2], "lng": row[3]}
+#                 print row[0]
+#                 print row[1]
+#                 print row[2]
+#                 print row[3]
+#                 x = x + 1
+#             return render(request, 'home/index.html', Context({"markers": response_data}))
+#
+#         except:
+#             print "Error: unable to fetch data"
+#         return HttpResponse(
+#             json.dumps(response_data),
+#             content_type="application/json"
+#         )
+#     else:
+#         return HttpResponse(
+#             json.dumps({"nothing to see": "this isn't happening"}),
+#             content_type="application/json"
+#         )
 
 def userLogin(request):
     if request.method == 'POST':
         post = request.POST
         form = LoginForm(request.POST)
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect(reverse('home:index'))
+        if form.is_valid():
+            username = request.POST['username']
+            password = request.POST['password']
+
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(reverse('home:index'))
+                else:
+                    form.add_error(None, "This account has been disabled")
             else:
-                form.add_error(None, "This account has been disabled")
-        else:
-            form.add_error(None, "Invalid User")
+                form.add_error(None, "Invalid User")
     else:
         post = None
-        form = None
+        form = LoginForm()
     context = {
         'post': post,
         'form': form
@@ -134,7 +141,8 @@ def churchForm(request):
                 user.save()
                 new_church = Church(user=user, name=request.POST['name'], number=request.POST['phone'],
                                     address1=request.POST['address1'], address2=request.POST['address2'],
-                                    city=request.POST['city'], state=request.POST['state'], zipcode=request.POST['zipcode'])
+                                    city=request.POST['city'], state=request.POST['state'], zipcode=request.POST['zipcode'],
+                                    pastor=request.POST['pastor'], pastor_number=request.POST['pastorPhone'])
                 zipcode = Zipcode.objects.get(zip=request.POST["zipcode"])
                 new_church.x_lat = zipcode.latitude
                 new_church.y_long = zipcode.longitude

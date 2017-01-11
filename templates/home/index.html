@@ -8,7 +8,8 @@
     </div> -->
     <div class="row">
         <div class="col-md-12">
-            <h3 style="color:#3d95ef">Need Your Help</h3>
+            <!-- <h3 style="color:#3d95ef">Need Your Help</h3> -->
+            <img alt="Need Your Help" style="height: 150px; width: 150px" src="{% static 'img/need_your_help.png' %}" class="img-responsive">
             <hr>
         </div>
     </div>
@@ -114,31 +115,38 @@
                     <th>Help</th>
                 </tr>
                 {% for h in help %}
-                <tr>
+                <tr {% if h.category.group.name ==  "Bible Study" %} style="background-color:#CDFFFF" {% endif %}>
                     <td>{{ h.num }}</td>
                     {% if h.day == 0 %}
-                        <td>Sun {{h.start}}</td>
+                        <td><img alt="Sunday" class="date_images" title="Sunday" src="{% static 'img/sunday.png' %}" class="img-responsive">{{h.start}}</td>
                     {% endif %}
                     {% if h.day == 1 %}
-                        <td>Mon {{h.start}}</td>
+                        <td><img alt="Monday" class="date_images" title="Monday" src="{% static 'img/monday.png' %}" class="img-responsive">{{h.start}}</td>
                     {% endif %}
                     {% if h.day == 2 %}
-                        <td>Tues {{h.start}}</td>
+                        <td><img alt="Tuesday" class="date_images" title="Tuesday" src="{% static 'img/tuesday.png' %}" class="img-responsive">{{h.start}}</td>
                     {% endif %}
                     {% if h.day == 3 %}
-                        <td>Wed {{h.start}}</td>
+                        <td><img alt="Wednesday" class="date_images" title="Wednesday" src="{% static 'img/wednesday.png' %}" class="img-responsive">{{h.start}}</td>
                     {% endif %}
                     {% if h.day == 4 %}
-                        <td>Thurs {{h.start}}</td>
+                        <td><img alt="Thursday" class="date_images" title="Thursday" src="{% static 'img/thursday.png' %}" class="img-responsive">{{h.start}}</td>
                     {% endif %}
                     {% if h.day == 5 %}
-                        <td>Fri {{h.start}}</td>
+                        <td><img alt="Friday" class="date_images" title="Friday" src="{% static 'img/friday.png' %}" class="img-responsive">{{h.start}}</td>
                     {% endif %}
                     {% if h.day == 6 %}
-                        <td>Sat {{h.start}}</td>
+                        <td><img alt="Saturday" class="date_images" title="Saturday" src="{% static 'img/saturday.png' %}" class="img-responsive">{{h.start}}</td>
                     {% endif %}
                     <td>{{h.students}}</td>
+                    {% if h.category.icon != None and h.category.icon != "" %}
+                    <td><img alt="{{ h.category.icon }}" style="height: 50px; width: 50px; float:left" title="{{ h.category.name }}" src="{{ h.category.icon.url }}" class="img-responsive">{{h.category.name}}</td>
+                    {% elif h.category.group.icon != None and h.category.group.icon != "" %}
+                    <td><img alt="{{ h.category.icon }}" style="height: 50px; width: 50px; float:left" title="{{ h.category.group.name }}" src="{{ h.category.group.icon.url }}" class="img-responsive">{{h.category.name}}</td>
+                    {% else %}
                     <td>{{h.category.name}}</td>
+                    {% endif %}
+
                     <td>{{h.church.city}}</td>
                     <td><a href="{% url 'home:volunteerForm' h.id %}" style="color:black; text-decoration:none"><i class="fa fa-check-circle-o"></i></a></td>
                 </tr>

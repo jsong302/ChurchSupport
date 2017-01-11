@@ -17,6 +17,6 @@ urlpatterns = [
     url(r'^submitRequest/$', views.submitRequest, name='submitRequest'),
     url(r'^volunteerForm/$', views.volunteerForm, name='volunteerForm'),
     url(r'^volunteerForm/(?P<id>[0-9]+)/$', views.volunteerForm, name='volunteerForm'),
-    url(r'search/$', views.search, name='search')
+    # url(r'search/$', views.search, name='search')
     #url(r'^registerChurch/$', views.registerChurch, name='register'),
 ]

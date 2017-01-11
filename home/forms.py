@@ -10,6 +10,8 @@ from django.forms import ModelForm
 #         if not self: return ''
 #         return '<label class="errorlist">%s</label>' % ''.join(['<label class="error">%s</label>' % e for e in self])
 
+
+
 class ChurchForm(forms.Form):
 
     username = forms.EmailField(required=True)
@@ -28,6 +30,13 @@ class ChurchForm(forms.Form):
     phone = forms.CharField(validators=[validators.MaxLengthValidator(10, "Please enter a valid phone number"),
                                          validators.RegexValidator("^[0-9]*$", "Please enter a valid phone number")
                                        ])
+
+    pastor = forms.CharField(validators=[validators.RegexValidator("^[a-zA-Z]*$", "Only letters allowed")
+                                           ])
+
+    pastorPhone = forms.CharField(validators=[validators.MaxLengthValidator(10, "Please enter a valid phone number"),
+                                        validators.RegexValidator("^[0-9]*$", "Please enter a valid phone number")
+                                        ])
     address1 = forms.CharField(required=True)
     address2 = forms.CharField(required=False)
     city = forms.CharField(required=True)
@@ -59,14 +68,14 @@ class VolunteerForm(forms.Form):
     lastName = forms.CharField(validators=[validators.RegexValidator("^[a-zA-Z]*$", "Only letters allowed")
                                            ])
     phone = forms.CharField(validators=[validators.MaxLengthValidator(10, "Please enter a valid phone number"),
-                                         validators.RegexValidator("^[0-9]*$", "Please enter a valid phone number")
+                                        validators.RegexValidator("^[0-9]*$", "Please enter a valid phone number")
                                        ])
     churchName = forms.CharField(validators=[validators.MaxLengthValidator(50, "Too many characters (Less than 50)")])
     address1 = forms.CharField(required=True)
     address2 = forms.CharField(required=False)
     city = forms.CharField(required=True)
     state = forms.CharField(required=True)
-    zipcode = forms.CharField(validators=[validators.RegexValidator("^[0-9]*$", "Please enter a valid zipcode")])
+    zipcode = forms.CharField(validators=[validators.RegexValidator("^[0-9]*$", "Please neter a valid zipcode")])
     contactPhone = forms.CharField(validators=[validators.MaxLengthValidator(10, "Please enter a valid phone number"),
                                          validators.RegexValidator("^[0-9]*$", "Please enter a valid phone number")
                                        ])
@@ -86,4 +95,5 @@ class VolunteerMinForm(forms.Form):
 
 class LoginForm(forms.Form):
     username = forms.CharField()
-    password = forms.CharField()
+    password = forms.CharField(validators=[validators.RegexValidator("^[a-zA-Z0-9]*$",
+                                            "Only alphanumeric characters allowed")])

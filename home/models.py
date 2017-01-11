@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
 import MySQLdb
 
 # Create your models here.
@@ -10,6 +11,8 @@ APPROVAL_CHOICES = (
     (0, 'Unapproved'),
     (1, 'Approved')
 )
+
+
 
 class Zipcode(models.Model):
     def __unicode__(self):
@@ -47,6 +50,8 @@ class Church(models.Model):
     zipcode = models.CharField(max_length=6, null=True)
     x_lat = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, editable=False)
     y_long = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, editable=False)
+    pastor = models.CharField(max_length=50, null=True)
+    pastor_number = models.CharField(max_length=20, null=True)
     church_area1 = models.CharField(max_length=50, null=True, blank=True)
     church_area2 = models.CharField(max_length=50, null=True, blank=True)
     other_language = models.CharField(max_length=50, null=True, blank=True)
@@ -83,7 +88,7 @@ class Min_Group(models.Model):
     def __unicode__(self):
         return 'Group: ' + self.name
     name = models.CharField(max_length=50, null=True)
-    icon = models.CharField(max_length=50, null=True, blank=True)
+    icon = models.ImageField(upload_to="icons", null=True, blank=True)
 
 class Min_Category(models.Model):
     def __unicode__(self):
@@ -91,7 +96,7 @@ class Min_Category(models.Model):
     group = models.ForeignKey(Min_Group, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, null=True)
     korean = models.CharField(max_length=50, null=True, blank=True)
-    icon = models.CharField(max_length=50, null=True, blank=True)
+    icon = models.ImageField(upload_to="icons", null=True, blank=True)
 
 class Interest(models.Model):
     def __unicode__(self):

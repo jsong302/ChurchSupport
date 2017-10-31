@@ -14,7 +14,7 @@ from django.forms import ModelForm
 
 class ChurchForm(forms.Form):
 
-    username = forms.EmailField(required=True)
+    username = forms.EmailField()
     password = forms.CharField(validators=[validators.MaxLengthValidator(20, "Too many characters (Less than 20)"),
                                            validators.MinLengthValidator(5, "Not enough characters (More than 5)"),
                                            validators.RegexValidator("^[a-zA-Z0-9]*$",
@@ -97,3 +97,6 @@ class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(validators=[validators.RegexValidator("^[a-zA-Z0-9]*$",
                                             "Only alphanumeric characters allowed")])
+
+class InterestForm(forms.Form):
+    interests = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)

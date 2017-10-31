@@ -15,11 +15,11 @@ import json, math
 from django.http import HttpResponse
 
 
-def not_in_church_group(user):
+def in_church_group(user):
     return user.is_authenticated() and user.groups.filter(name='Church').exists()
 
-def not_in_volunteer_group(user):
-    return user.is_authenticated() and user.groups.filter(name='Church').exists()
+def in_volunteer_group(user):
+    return user.is_authenticated() and user.groups.filter(name='Volunteer').exists()
 
 
 def index(request):
@@ -165,7 +165,7 @@ def churchForm(request):
     return render(request, 'home/churchForm.html', context)
 
 @login_required(redirect_field_name=None)
-@user_passes_test(not_in_church_group, login_url='/login/', redirect_field_name=None)
+@user_passes_test(in_church_group, login_url='/login/', redirect_field_name=None)
 def churchMinForm(request):
     ministries = Min_Category.objects.order_by('name')
     church = Church.objects.get(user = request.user)
@@ -200,7 +200,7 @@ def churchMinForm(request):
     return render(request, 'home/churchMinForm.html', context)
 
 @login_required(redirect_field_name=None)
-@user_passes_test(not_in_church_group, login_url='/login/', redirect_field_name=None)
+@user_passes_test(in_church_group, login_url='/login/', redirect_field_name=None)
 def removeHelp(request, id):
     help = Help.objects.get(id=id)
     if help.church.user == request.user:
@@ -233,10 +233,14 @@ def volunteerForm(request, id = None):
                                         church_contact=request.POST['contactName'],
                                         church_phone=request.POST['contactPhone'])
                     new_vol.save()
+                    group = Group.objects.get(name='Volunteer')
+                    group.user_set.add(user)
+                    u = authenticate(username=request.POST['username'], password=request.POST['password'])
+                    login(request, u)
                     if id:
-                        return HttpResponseRedirect(reverse('home:helpConfirm', args=[id, new_vol.id]))
+                        return HttpResponseRedirect(reverse('home:helpConfirm', args=[id]))
                     else:
-                        return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[new_vol.id]))
+                        return HttpResponseRedirect(reverse('home:volunteerMinForm'))
             except IntegrityError as e:
                 form.add_error(None, "This email is already taken.")
 
@@ -260,18 +264,17 @@ def volunteerForm(request, id = None):
         }
     return render(request, 'home/volunteerForm.html', context)
 
-def volunteerMinForm(request, id):
+def volunteerMinForm(request):
     ministries = Min_Category.objects.order_by('name')
     if request.method == 'POST':
         form = VolunteerMinForm(request.POST)
         post = request.POST
         count = request.POST['count']
-        print count
         for x in range(0, int(count) + 1):
             with transaction.atomic():
                 try:
                     category = Min_Category.objects.get(id=request.POST["category[" + str(x) + "]"])
-                    volunteer = Volunteer.objects.get(id=id)
+                    volunteer = Volunteer.objects.get(user = request.user)
                     interest = Interest(category=category, volunteer=volunteer)
                     interest.save()
                 except KeyError:
@@ -283,13 +286,13 @@ def volunteerMinForm(request, id):
         'ministries': ministries,
         'post': post,
         'form': form,
-        'id': id
     }
     return render(request, 'home/volunteerMinForm.html', context)
 
 
-
-def helpConfirm(request, id, vol):
+@login_required(redirect_field_name=None)
+@user_passes_test(in_volunteer_group, login_url='/login/', redirect_field_name=None)
+def helpConfirm(request, id):
     help = Help.objects.get(id=id)
     if request.method == 'POST':
         post = request.POST
@@ -300,7 +303,6 @@ def helpConfirm(request, id, vol):
     context = {
         'post': post,
         'help': help,
-        'vol': vol
     }
     return render(request, 'home/helpConfirm.html', context)
 
@@ -309,15 +311,12 @@ def submitRequest(request):
         post = request.POST
         with transaction.atomic():
             help = Help.objects.get(id=request.POST["help_id"])
-            vol = Volunteer.objects.get(id=request.POST["volunteer_id"])
+            vol = Volunteer.objects.get(user = request.user)
             request = Help_Request(help=help, volunteer=vol)
-
             request.save()
-            # return HttpResponseRedirect(reverse('home:index'))
-            return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[vol.id]))
-                # return redirect('churchMinForm', church_id = new_church.id)
+            return HttpResponseRedirect(reverse('home:volunteerMinForm'))
     else:
-        return HttpResponseRedirect(reverse('home:volunteerMinForm', args=[request.POST["volunteer_id"]]))
+        return HttpResponseRedirect(reverse('home:volunteerMinForm'))
 
 
 

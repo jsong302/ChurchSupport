@@ -78,13 +78,12 @@ WSGI_APPLICATION = 'CSO.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'CSO',
-        'USER': 'admin',
-        'PASSWORD': 'Matthew11:28-30',
-        'HOST': 'cso.cb9o8fk82u6u.us-east-1.rds.amazonaws.com',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
-        'ATOMIC_REQUESTS': True,
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dd153du4c33hgp',
+        'USER': 'hcjwsdotwefrol',
+        'PASSWORD': 'b1f52efacb7e1ad4edb543fec9a110f11fc325a30b6477e348c44e79396116b1',
+        'HOST': 'ec2-54-235-101-91.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 

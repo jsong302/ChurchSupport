@@ -1,15 +1,12 @@
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.shortcuts import get_object_or_404, render, redirect
-from django.template import loader, Context
 from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction, IntegrityError
 from django.contrib.auth import authenticate, login, logout
 from home.models import Min_Category, Church, Help, Volunteer, Help_Request, Interest, Zipcode
 from .forms import ChurchForm, ChurchMinForm, VolunteerForm, VolunteerMinForm, LoginForm
-import MySQLdb
-import json, math
 
 # Create your views here.
 from django.http import HttpResponse
@@ -132,7 +129,7 @@ def churchForm(request):
     if request.method == 'POST':
         form = ChurchForm(request.POST)
         post = request.POST
-        print form.is_valid()
+        print(form.is_valid())
         if form.is_valid():
             with transaction.atomic():
                 user = User.objects.create_user(username=request.POST['username'], email=request.POST['username'],
@@ -170,12 +167,12 @@ def churchMinForm(request):
     ministries = Min_Category.objects.order_by('name')
     church = Church.objects.get(user = request.user)
     requests = Help.objects.all().filter(church=church)
-    print requests
+    print(requests)
     if request.method == 'POST':
         form = ChurchMinForm(request.POST)
         post = request.POST
         count = request.POST['count']
-        print count
+        print(count)
         for x in range(0, int(count) + 1):
             with transaction.atomic():
                 try:
@@ -186,7 +183,7 @@ def churchMinForm(request):
                                 day=request.POST["day[" + str(x) + "]"])
                     help.save()
                 except KeyError:
-                    print "KeyError in index: " + str(x)
+                    print("KeyError in index: " + str(x))
     else:
         form = None
         post = None
@@ -278,7 +275,7 @@ def volunteerMinForm(request):
                     interest = Interest(category=category, volunteer=volunteer)
                     interest.save()
                 except KeyError:
-                    print "KeyError in index: " + str(x)
+                    print("KeyError in index: " + str(x))
     else:
         form = None
         post = None
@@ -296,7 +293,7 @@ def helpConfirm(request, id):
     help = Help.objects.get(id=id)
     if request.method == 'POST':
         post = request.POST
-        print post
+        print(post)
     else:
         post = None
 

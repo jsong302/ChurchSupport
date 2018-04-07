@@ -78,12 +78,12 @@ WSGI_APPLICATION = 'CSO.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dd153du4c33hgp',
-        'USER': 'hcjwsdotwefrol',
-        'PASSWORD': 'b1f52efacb7e1ad4edb543fec9a110f11fc325a30b6477e348c44e79396116b1',
-        'HOST': 'ec2-54-235-101-91.compute-1.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'church_map',
+        'USER': 'church_jsong302',
+        'PASSWORD': 'Matthew11:28-30',
+        'HOST': '174.136.15.190',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 

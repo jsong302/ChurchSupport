@@ -6,3 +6,4 @@ Pillow
 pytz
 setuptools
 django-mysql
+MySQL-python

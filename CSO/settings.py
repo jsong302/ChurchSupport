@@ -131,9 +131,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "media")
-]
+# STATICFILES_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "media")
+# ]
 
 # Login
 

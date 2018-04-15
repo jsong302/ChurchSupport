@@ -124,15 +124,27 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+# STATIC_URL = '/static/'
+# MEDIA_URL = '/media/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# STATICFILES_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
-# DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+SFTP_STORAGE_HOST = os.environ.get('SFTP_STORAGE_HOST')
+SFTP_STORAGE_ROOT = '/map/'
+SFTP_STORAGE_USERNAME = os.environ.get('SFTP_STORAGE_USERNAME')
+SFTP_STORAGE_PASSWORD = os.environ.get('SFTP_STORAGE_PASSWORD')
+SFTP_STORAGE_PARAMS = {
+    'username': SFTP_STORAGE_USERNAME,
+    'password': SFTP_STORAGE_PASSWORD,
+    'allow_agent': False,
+    'look_for_keys': False,
+}
+SFTP_STORAGE_INTERACTIVE = False
+STATIC_URL = SFTP_STORAGE_HOST + SFTP_STORAGE_ROOT
+STATIC_ROOT = STATIC_URL
+STATICFILES_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
 
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "media")

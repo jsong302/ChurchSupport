@@ -8,3 +8,4 @@ setuptools
 django-mysql
 MySQL-python
 django-storages
+boto

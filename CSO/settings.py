@@ -130,21 +130,26 @@ USE_TZ = True
 # STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-SFTP_STORAGE_HOST = os.environ.get('SFTP_STORAGE_HOST')
-SFTP_STORAGE_ROOT = '/map/'
-SFTP_STORAGE_USERNAME = os.environ.get('SFTP_STORAGE_USERNAME')
-SFTP_STORAGE_PASSWORD = os.environ.get('SFTP_STORAGE_PASSWORD')
-SFTP_STORAGE_PARAMS = {
-    'username': SFTP_STORAGE_USERNAME,
-    'password': SFTP_STORAGE_PASSWORD,
-    'allow_agent': False,
-    'look_for_keys': False,
-}
-SFTP_STORAGE_INTERACTIVE = False
-STATIC_URL = SFTP_STORAGE_HOST + SFTP_STORAGE_ROOT
+# SFTP_STORAGE_HOST = os.environ.get('SFTP_STORAGE_HOST')
+# SFTP_STORAGE_ROOT = '/map/'
+# SFTP_STORAGE_USERNAME = os.environ.get('SFTP_STORAGE_USERNAME')
+# SFTP_STORAGE_PASSWORD = os.environ.get('SFTP_STORAGE_PASSWORD')
+# SFTP_STORAGE_PARAMS = {
+#     'username': SFTP_STORAGE_USERNAME,
+#     'password': SFTP_STORAGE_PASSWORD,
+#     'allow_agent': False,
+#     'look_for_keys': False,
+# }
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME')
+STATIC_URL = 'http://' + AWS_STORAGE_BUCKET_NAME + '.s3.amazonaws.com/'
 STATIC_ROOT = STATIC_URL
-STATICFILES_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
-DEFAULT_FILE_STORAGE = 'storages.backends.sftpstorage.SFTPStorage'
+
+
+
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "media")
